@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Applications – Smart Job Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-wrapper">
+  <div class="page-header">
+    <div class="container">
+      <h2 class="mb-1 fw-bold">My Applications</h2>
+      <p class="text-muted mb-0">Track the status of all your job applications</p>
+    </div>
+  </div>
+
+  <div class="container py-4">
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+      <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Status Filter Tabs -->
+    <ul class="nav nav-pills mb-4" id="statusTabs">
+      <li class="nav-item"><a class="nav-link active" href="#" onclick="filterApps('ALL', this)">All</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="filterApps('PENDING', this)">Pending</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="filterApps('REVIEWED', this)">Reviewed</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="filterApps('SHORTLISTED', this)">Shortlisted</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="filterApps('HIRED', this)">Hired</a></li>
+      <li class="nav-item"><a class="nav-link" href="#" onclick="filterApps('REJECTED', this)">Rejected</a></li>
+    </ul>
+
+    <!-- Empty State -->
+    <div th:if="${applications.isEmpty()}" class="text-center py-5">
+      <div style="font-size:64px;opacity:.25">📋</div>
+      <h5 class="text-muted mt-3">No applications yet</h5>
+      <p class="text-muted">Start applying to jobs to see them here.</p>
+      <a href="/student/jobs" class="btn btn-primary-grad mt-2">Browse Jobs</a>
+    </div>
+
+    <!-- Application Cards -->
+    <div id="appList">
+      <div th:each="app : ${applications}"
+           th:data-status="${app.status.name()}"
+           class="app-card mb-3">
+        <div class="card border-0 shadow-sm rounded-3 hover-lift">
+          <div class="card-body p-4">
+            <div class="row align-items-center">
+              <div class="col-md-6">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="company-avatar">
+                    <span th:text="${#strings.substring(app.job.companyName, 0, 1).toUpperCase()}">C</span>
+                  </div>
+                  <div>
+                    <h5 class="mb-1 fw-bold" th:text="${app.job.title}"></h5>
+                    <p class="text-muted mb-0">
+                      <i class="bi bi-building me-1"></i><span th:text="${app.job.companyName}"></span>
+                      <span th:if="${app.job.location}" class="ms-3">
+                        <i class="bi bi-geo-alt me-1"></i><span th:text="${app.job.location}"></span>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 mt-3 mt-md-0">
+                <div class="text-muted small">Applied</div>
+                <div class="fw-semibold" th:text="${#temporals.format(app.appliedAt, 'MMM dd, yyyy')}"></div>
+                <div class="text-muted small mt-1" th:if="${app.job.jobType}" th:text="${app.job.jobType}"></div>
+              </div>
+              <div class="col-md-3 mt-3 mt-md-0 text-md-end">
+                <span th:class="'badge status-badge fs-6 ' + ${app.status.name().toLowerCase()}"
+                      th:text="${app.status.name()}"></span>
+                <div th:if="${app.employerNote}" class="mt-2">
+                  <button class="btn btn-sm btn-outline-secondary"
+                          data-bs-toggle="collapse"
+                          th:data-bs-target="'#note-' + ${app.id}">
+                    <i class="bi bi-chat-text me-1"></i>Note
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div th:if="${app.employerNote}" th:id="'note-' + ${app.id}" class="collapse mt-3">
+              <div class="alert alert-light border mb-0">
+                <strong>Employer's Note:</strong> <span th:text="${app.employerNote}"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function filterApps(status, el) {
+    document.querySelectorAll('#statusTabs .nav-link').forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('#appList .app-card').forEach(card => {
+      card.style.display = (status === 'ALL' || card.dataset.status === status) ? 'block' : 'none';
+    });
+    return false;
+  }
+</script>
+</body>
+</html>

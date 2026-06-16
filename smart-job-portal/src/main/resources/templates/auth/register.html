@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register – Smart Job Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="auth-body">
+<div class="auth-wrapper">
+  <div class="auth-card" style="max-width:900px;">
+    <div class="auth-left d-none d-lg-flex">
+      <div class="auth-left-content">
+        <div class="auth-logo mb-4">🚀</div>
+        <h2 class="text-white fw-bold mb-3">Join Us Today</h2>
+        <p class="text-white-50 mb-4">Create your account and take the first step towards your dream career or finding the perfect candidate.</p>
+        <ul class="auth-features">
+          <li><i class="bi bi-check-circle-fill text-success me-2"></i> Free to use</li>
+          <li><i class="bi bi-check-circle-fill text-success me-2"></i> Email verified accounts</li>
+          <li><i class="bi bi-check-circle-fill text-success me-2"></i> Real-time notifications</li>
+          <li><i class="bi bi-check-circle-fill text-success me-2"></i> Smart job matching</li>
+        </ul>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="p-4 p-lg-5">
+        <h3 class="fw-bold mb-1">Create Account</h3>
+        <p class="text-muted mb-4">Fill in your details to get started</p>
+
+        <div th:if="${error}" class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/register}" method="post" th:object="${registerDto}">
+          <!-- Role Selection -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">I am a...</label>
+            <div class="role-selector">
+              <div class="role-option" onclick="selectRole('STUDENT', this)">
+                <div class="role-icon">🎓</div>
+                <div class="role-label">Student / Job Seeker</div>
+                <input type="radio" name="role" value="STUDENT" id="roleStudent" hidden>
+              </div>
+              <div class="role-option" onclick="selectRole('EMPLOYER', this)">
+                <div class="role-icon">🏢</div>
+                <div class="role-label">Employer</div>
+                <input type="radio" name="role" value="EMPLOYER" id="roleEmployer" hidden>
+              </div>
+            </div>
+            <div th:if="${#fields.hasErrors('role')}" class="text-danger small" th:errors="*{role}"></div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Full Name</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" class="form-control" th:field="*{fullName}" placeholder="John Doe" required>
+              </div>
+              <div th:if="${#fields.hasErrors('fullName')}" class="text-danger small" th:errors="*{fullName}"></div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email" class="form-control" th:field="*{email}" placeholder="you@example.com" required>
+              </div>
+              <div th:if="${#fields.hasErrors('email')}" class="text-danger small" th:errors="*{email}"></div>
+            </div>
+            <div class="col-12" id="companyField" style="display:none;">
+              <label class="form-label fw-semibold">Company Name</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-building"></i></span>
+                <input type="text" class="form-control" th:field="*{companyName}" placeholder="Your Company">
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password" class="form-control" th:field="*{password}" id="regPassword" placeholder="Min. 6 characters" required>
+                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('regPassword')">
+                  <i class="bi bi-eye" id="eye-regPassword"></i>
+                </button>
+              </div>
+              <div th:if="${#fields.hasErrors('password')}" class="text-danger small" th:errors="*{password}"></div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary-grad w-100 py-2 mb-3">
+            <i class="bi bi-person-plus me-2"></i>Create Account
+          </button>
+        </form>
+
+        <div class="text-center">
+          <span class="text-muted">Already have an account? </span>
+          <a href="/login" class="text-primary fw-semibold text-decoration-none">Sign in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function selectRole(role, el) {
+    document.querySelectorAll('.role-option').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('role' + role.charAt(0) + role.slice(1).toLowerCase().replace('student','Student').replace('employer','Employer')).checked = true;
+    document.getElementById('companyField').style.display = role === 'EMPLOYER' ? 'block' : 'none';
+  }
+  function togglePassword(id) {
+    const input = document.getElementById(id);
+    const icon = document.getElementById('eye-' + id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    icon.className = input.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+  }
+  // Restore role selection on error
+  const roleInputs = document.querySelectorAll('input[name="role"]');
+  roleInputs.forEach(input => {
+    if (input.checked) {
+      const option = input.closest('.role-option');
+      if (option) option.classList.add('active');
+    }
+  });
+</script>
+</body>
+</html>

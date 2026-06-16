@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Profile – Smart Job Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-wrapper">
+  <div class="page-header">
+    <div class="container">
+      <h2 class="fw-bold mb-1">Company Profile</h2>
+      <p class="text-muted mb-0">Keep your company information up to date</p>
+    </div>
+  </div>
+
+  <div class="container py-4">
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+      <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 text-center p-4">
+          <div class="profile-avatar mx-auto mb-3" style="width:80px;height:80px;font-size:32px;">
+            <span th:text="${#strings.substring(user.companyName ?: user.fullName, 0, 1).toUpperCase()}">C</span>
+          </div>
+          <h5 class="fw-bold mb-1" th:text="${user.companyName ?: user.fullName}"></h5>
+          <p class="text-muted small mb-2" th:text="${user.email}"></p>
+          <span class="badge bg-info">Employer</span>
+          <div th:if="${user.industry}" class="mt-2">
+            <span class="badge bg-light text-dark" th:text="${user.industry}"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-9">
+        <div class="card border-0 shadow-sm rounded-3">
+          <div class="card-header bg-white border-0 py-3">
+            <ul class="nav nav-tabs card-header-tabs">
+              <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#contact">Contact Info</a></li>
+              <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#company">Company Details</a></li>
+            </ul>
+          </div>
+          <div class="card-body p-4">
+            <form th:action="@{/employer/profile}" method="post" th:object="${user}">
+              <div class="tab-content">
+                <div class="tab-pane fade show active" id="contact">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Full Name</label>
+                      <input type="text" class="form-control" th:field="*{fullName}" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Email</label>
+                      <input type="email" class="form-control bg-light" th:value="${user.email}" readonly>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Phone</label>
+                      <input type="tel" class="form-control" th:field="*{phone}" placeholder="+1 (555) 000-0000">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Location</label>
+                      <input type="text" class="form-control" th:field="*{location}" placeholder="City, Country">
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="company">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Company Name</label>
+                      <input type="text" class="form-control" th:field="*{companyName}" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Industry</label>
+                      <select class="form-select" th:field="*{industry}">
+                        <option value="">Select Industry</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Education">Education</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Engineering">Engineering</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Company Size</label>
+                      <select class="form-select" th:field="*{companySize}">
+                        <option value="">Select Size</option>
+                        <option value="1-10">1-10 employees</option>
+                        <option value="11-50">11-50 employees</option>
+                        <option value="51-200">51-200 employees</option>
+                        <option value="201-1000">201-1000 employees</option>
+                        <option value="1000+">1000+ employees</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Company Website</label>
+                      <input type="url" class="form-control" th:field="*{companyWebsite}" placeholder="https://yourcompany.com">
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label fw-semibold">Company Description</label>
+                      <textarea class="form-control" th:field="*{companyDescription}" rows="4"
+                                placeholder="Tell candidates about your company culture, mission, and values..."></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 pt-3 border-top">
+                <button type="submit" class="btn btn-primary-grad px-4 py-2">
+                  <i class="bi bi-save me-2"></i>Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${jobId != null ? 'Edit Job' : 'Post Job'} + ' – Smart Job Portal'"></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-wrapper">
+  <div class="page-header">
+    <div class="container">
+      <h2 class="fw-bold mb-1" th:text="${jobId != null ? 'Edit Job' : 'Post a New Job'}"></h2>
+      <p class="text-muted mb-0">Fill in the details to attract the right candidates</p>
+    </div>
+  </div>
+
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="card border-0 shadow-sm rounded-3">
+          <div class="card-body p-4 p-lg-5">
+            <form th:action="${jobId != null ? '/employer/jobs/' + jobId + '/edit' : '/employer/jobs/post'}"
+                  method="post" th:object="${jobDto}">
+
+              <!-- Basic Info -->
+              <h5 class="fw-bold mb-4 text-primary"><i class="bi bi-info-circle me-2"></i>Basic Information</h5>
+              <div class="row g-3 mb-4">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Job Title <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" th:field="*{title}" placeholder="e.g., Senior Java Developer" required>
+                  <div th:if="${#fields.hasErrors('title')}" class="text-danger small" th:errors="*{title}"></div>
+                </div>
+				
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Job Type</label>
+                  <select class="form-select" th:field="*{jobType}">
+                    <option value="">Select Type</option>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Freelance">Freelance</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Industry</label>
+                  <select class="form-select" th:field="*{industry}">
+                    <option value="">Select Industry</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Education">Education</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Design">Design</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Human Resources">Human Resources</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Location</label>
+                  <input type="text" class="form-control" th:field="*{location}" placeholder="e.g., New York, NY or Remote">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Salary / Package</label>
+                  <input type="text" class="form-control" th:field="*{salary}" placeholder="e.g., $50,000 - $80,000/year">
+                </div>
+              </div>
+
+              <!-- Description -->
+              <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-file-text me-2"></i>Job Description</h5>
+              <div class="mb-4">
+                <textarea class="form-control" th:field="*{description}" rows="8"
+                          placeholder="Describe the role, responsibilities, what a typical day looks like..." required></textarea>
+                <div th:if="${#fields.hasErrors('description')}" class="text-danger small" th:errors="*{description}"></div>
+              </div>
+
+              <!-- Requirements -->
+              <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-list-check me-2"></i>Requirements</h5>
+              <div class="row g-3 mb-4">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Required Skills</label>
+                  <input type="text" class="form-control" th:field="*{skills}"
+                         placeholder="e.g., Java, Spring Boot, MySQL, Docker (comma separated)">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Experience Required</label>
+                  <select class="form-select" th:field="*{experience}">
+                    <option value="">Any Experience</option>
+                    <option value="Fresher">Fresher</option>
+                    <option value="0-1 years">0-1 years</option>
+                    <option value="1-3 years">1-3 years</option>
+                    <option value="3-5 years">3-5 years</option>
+                    <option value="5+ years">5+ years</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Education Required</label>
+                  <input type="text" class="form-control" th:field="*{education}"
+                         placeholder="e.g., Bachelor's in CS or related field">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Application Deadline</label>
+                  <input type="date" class="form-control" th:field="*{deadline}">
+                </div>
+              </div>
+
+              <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-primary-grad px-4 py-2">
+                  <i th:class="'bi me-2 ' + (${jobId != null} ? 'bi-save' : 'bi-send')"></i>
+                  <span th:text="${jobId != null ? 'Update Job' : 'Post Job'}"></span>
+                </button>
+                <a href="/employer/jobs" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
